@@ -69,6 +69,29 @@ extern "C" {
 /* Timing jitter as per spec is +/16 usecs */
 #define BLE_LL_JITTER_USECS         (16)
 
+
+#if MYNEWT_VAL(BLE_LL_SCA) < 0
+#error Invalid SCA value
+#elif MYNEWT_VAL(BLE_LL_SCA) <= 20
+#define BLE_LL_SCA_ENUM     7
+#elif MYNEWT_VAL(BLE_LL_SCA) <= 30
+#define BLE_LL_SCA_ENUM     6
+#elif MYNEWT_VAL(BLE_LL_SCA) <= 50
+#define BLE_LL_SCA_ENUM     5
+#elif MYNEWT_VAL(BLE_LL_SCA) <= 75
+#define BLE_LL_SCA_ENUM     4
+#elif MYNEWT_VAL(BLE_LL_SCA) <= 100
+#define BLE_LL_SCA_ENUM     3
+#elif MYNEWT_VAL(BLE_LL_SCA) <= 150
+#define BLE_LL_SCA_ENUM     2
+#elif MYNEWT_VAL(BLE_LL_SCA) <= 250
+#define BLE_LL_SCA_ENUM     1
+#elif MYNEWT_VAL(BLE_LL_SCA) <= 500
+#define BLE_LL_SCA_ENUM     0
+#else
+#error Invalid SCA value
+#endif
+
 /* Packet queue header definition */
 STAILQ_HEAD(ble_ll_pkt_q, os_mbuf_pkthdr);
 
@@ -372,6 +395,12 @@ struct ble_dev_addr
 #define BLE_LL_LLID_DATA_FRAG           (1)
 #define BLE_LL_LLID_DATA_START          (2)
 #define BLE_LL_LLID_CTRL                (3)
+
+#define BLE_LL_LLID_IS_CTRL(hdr) \
+    (((hdr) & BLE_LL_DATA_HDR_LLID_MASK) == BLE_LL_LLID_CTRL)
+#define BLE_LL_LLID_IS_DATA(hdr) \
+    ((((hdr) & BLE_LL_DATA_HDR_LLID_MASK) == BLE_LL_LLID_DATA_START) || \
+     (((hdr) & BLE_LL_DATA_HDR_LLID_MASK) == BLE_LL_LLID_DATA_FRAG))
 
 /*
  * CONNECT_REQ
