@@ -19,6 +19,8 @@
 
 #include "stress.h"
 
+struct os_callout stress_timer_callout;
+
 void
 com_stress_print_report(const struct com_stress_test_ctx *test_ctxs)
 {
