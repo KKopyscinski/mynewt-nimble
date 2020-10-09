@@ -691,6 +691,10 @@ static int mod_set(bool vnd, int argc, char **argv, char *val)
 		}
 	}
 
+	if (!strncmp(next, "data", len) && mod->cb && mod->cb->settings_set) {
+		return mod->cb->settings_set(mod, len_rd, read_cb, cb_arg);
+	}
+
 	BT_WARN("Unknown module key %s", argv[1]);
 	return -ENOENT;
 }
@@ -2030,33 +2034,20 @@ int bt_mesh_model_data_store(struct bt_mesh_model *mod, bool vnd,
 			     const void *data, size_t data_len)
 {
 	char path[20];
-	char buf[BT_SETTINGS_SIZE(sizeof(struct mod_pub_val))];
-	char *val;
 	int err;
 
 	encode_mod_path(mod, vnd, "data", path, sizeof(path));
 
 	if (data_len) {
-		mod->flags |= BT_MESH_MOD_DATA_PRESENT;
-		val = settings_str_from_bytes(data, data_len,
-					      buf, sizeof(buf));
-		if (!val) {
-			BT_ERR("Unable to encode model publication as value");
-			return -EINVAL;
-		}
-		err = settings_save_one(path, val);
-	} else if (mod->flags & BT_MESH_MOD_DATA_PRESENT) {
-		mod->flags &= ~BT_MESH_MOD_DATA_PRESENT;
-		err = settings_save_one(path, NULL);
+		err = settings_save_one(path, data, data_len);
 	} else {
-		/* Nothing to delete */
-		err = 0;
+		err = settings_delete(path);
 	}
 
 	if (err) {
-		BT_ERR("Failed to store %s value", path);
+		BT_ERR("Failed to store %s value", log_strdup(path));
 	} else {
-		BT_DBG("Stored %s value", path);
+		BT_DBG("Stored %s value", log_strdup(path));
 	}
 	return err;
 }

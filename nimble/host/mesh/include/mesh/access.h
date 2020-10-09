@@ -10,6 +10,8 @@
 #ifndef __BT_MESH_ACCESS_H
 #define __BT_MESH_ACCESS_H
 
+#include "settings.h"
+
 /**
  * @brief Bluetooth Mesh Access Layer
  * @defgroup bt_mesh_access Bluetooth Mesh Access Layer
@@ -432,11 +434,16 @@ struct bt_mesh_model_cb {
 	 * @sa settings_handler::h_set
 	 *
 	 * @param model Model to set the persistent data of.
-	 * @param val Data from the backend.
+	 * @param len_rd The size of the data found in the backend.
+	 * @param read_cb Function provided to read the data from the backend.
+	 * @param cb_arg Arguments for the read function provided by the
+	 * backend.
 	 *
 	 * @return 0 on success, error otherwise.
 	 */
-	int (*const settings_set)(struct bt_mesh_model *model, char *val);
+	int (*const settings_set)(struct bt_mesh_model *model,
+				  size_t len_rd, settings_read_cb read_cb,
+				  void *cb_arg);
 
 	/** @brief Callback called when all settings have been loaded.
 	 *
