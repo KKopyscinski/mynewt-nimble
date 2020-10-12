@@ -538,7 +538,6 @@ syscfg.defs:
         description: >
             Minimum level for the BLE Mesh Beacon-related log.
         value: 1
-
     BLE_MESH_CRYPTO_LOG_MOD:
         description: >
             Numeric module ID to use for BLE Mesh cryptographic log messages.
