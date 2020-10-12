@@ -385,6 +385,7 @@ struct bt_mesh_model_pub {
 	u8_t  period;       /**< Publish Period. */
 	u8_t  period_div:4, /**< Divisor for the Period. */
 	      cred:1,       /**< Friendship Credentials Flag. */
+		  send_rel:1;   /**< Force reliable sending (segment acks) */
 	      fast_period:1,/**< Use FastPeriodDivisor */
 	      count:3;      /**< Retransmissions left. */
 
