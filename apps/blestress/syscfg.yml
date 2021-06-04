@@ -62,7 +62,7 @@ syscfg.vals:
     # Controller uses msys pool for storing advertising data and scan responses.
     # Since we advertise a lot of data (~4k in total) at the same time we need
     # to increase block count.
-    MSYS_1_BLOCK_COUNT: 50
+    MSYS_1_BLOCK_COUNT: 400
 
     #
     BLE_L2CAP_COC_MAX_NUM: 2

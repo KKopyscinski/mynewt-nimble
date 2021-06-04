@@ -1067,17 +1067,14 @@ tx_stress_10_l2cap_event(struct ble_l2cap_event *event, void *arg)
 
         tx_stress_ctx->rcv_data_flag = true;
 
-        stress_l2cap_coc_recv(event->receive.chan, event->receive.sdu_rx);
-
         /* Time of data sending */
         us = tx_stress_ctx->end_us - tx_stress_ctx->begin_us;
-        MODLOG_DFLT(INFO, "Time of receiving L2CAP data: %ld \n",
-                    tx_stress_ctx->end_us);
+        MODLOG_DFLT(INFO, "Time of receiving L2CAP data: %lld \n", us);
 
         /* Remember size of entire mbuf chain */
         tx_stress_ctx->rcv_data_bytes = OS_MBUF_PKTLEN(
             event->receive.sdu_rx);
-        MODLOG_DFLT(INFO, "Num of received bytes: %lld\n",
+        MODLOG_DFLT(INFO, "Num of received bytes: %d\n",
                     tx_stress_ctx->rcv_data_bytes);
 
         /* Calculate the bit rate of this send */
@@ -1097,6 +1094,11 @@ tx_stress_10_l2cap_event(struct ble_l2cap_event *event, void *arg)
         console_printf("\033[0;32m>\033[0m");
         MODLOG_DFLT(INFO, "Loop nr: %d\n", ++i);
 
+        stress_l2cap_coc_recv(event->receive.chan, event->receive.sdu_rx);
+        if (i > MYNEWT_VAL(BLE_STRESS_REPEAT)) {
+            ble_gap_terminate(tx_stress_ctx->conn_handle,
+                              BLE_ERR_REM_USER_CONN_TERM);
+        }
         tx_stress_10_l2cap_send_req();
         return 0;
 

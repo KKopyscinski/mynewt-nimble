@@ -755,7 +755,7 @@ rx_stress_10_l2cap_event(struct ble_l2cap_event *event, void *arg)
     static int send_cnt = 0;
     static bool stalled = false;
     struct ble_l2cap_chan_info chan_info;
-
+    static int data_len_increment = (STRESS_COC_MTU - 1000) / MYNEWT_VAL(BLE_STRESS_REPEAT);
     switch (event->type) {
     case BLE_L2CAP_EVENT_COC_CONNECTED:
         if (event->connect.status) {
@@ -854,7 +854,8 @@ rx_stress_10_l2cap_event(struct ble_l2cap_event *event, void *arg)
     }
 
     MODLOG_DFLT(INFO, " %d, %d\n", ++send_cnt, data_len);
-    data_len += 500;
+    data_len += data_len_increment;
+
 
     return 0;
 }
