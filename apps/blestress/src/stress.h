@@ -166,6 +166,9 @@ struct com_stress_test_ctx {
     int s12_notif_time;
 
     /* Average notification time */
+    int s13_notif_num;
+
+    /* Average notification time */
     int s13_notif_time;
 
     /* Average notification time */

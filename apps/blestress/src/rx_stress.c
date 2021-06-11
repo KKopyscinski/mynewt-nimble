@@ -1012,11 +1012,23 @@ rx_stress_12_gap_event(struct ble_gap_event *event, void *arg)
 }
 
 static int
-rx_stress_13_gap_event(struct ble_gap_event *event, void *arg)
+rx_stress_13_perform(void)
 {
     int rc;
     struct os_mbuf *om = NULL;
 
+    for (int i = 0; i < MYNEWT_VAL(BLE_STRESS_REPEAT); i++) {
+        om = ble_hs_mbuf_from_flat(test_6_pattern, 10);
+        rc = ble_gattc_notify_custom(rx_stress_ctx->conn_handle,
+                                     hrs_hrm_handle, om);
+        assert(rc == 0);
+    }
+    return 0;
+}
+
+static int
+rx_stress_13_gap_event(struct ble_gap_event *event, void *arg)
+{
     switch (event->type) {
     case BLE_GAP_EVENT_CONNECT:
         /* A new connection was established or a connection attempt failed */
@@ -1027,14 +1039,14 @@ rx_stress_13_gap_event(struct ble_gap_event *event, void *arg)
             rx_stress_ctx->conn_handle = event->connect.conn_handle;
 
             rx_stress_ctx->begin_us = os_get_uptime_usec();
-            break;
+            rx_stress_13_perform();
+            return 0;
         } else {
             /* Connection failed; resume advertising */
             MODLOG_DFLT(INFO, "Connection failed; status=%d ",
                         event->connect.status);
             assert(0);
         }
-        return 0;
 
     case BLE_GAP_EVENT_DISCONNECT:
         MODLOG_DFLT(INFO, "Disconnect; reason=%d \n",
@@ -1060,20 +1072,13 @@ rx_stress_13_gap_event(struct ble_gap_event *event, void *arg)
             rx_stress_ctx->end_us = os_get_uptime_usec();
             ble_gap_terminate(event->connect.conn_handle,
                               BLE_ERR_REM_USER_CONN_TERM);
-            return 0;
         }
-        break;
+        return 0;
 
     default:
         MODLOG_DFLT(INFO, "Other event occurs=%d\n", event->type);
         return 0;
     }
-
-    om = ble_hs_mbuf_from_flat(test_6_pattern, 10);
-    rc = ble_gattc_notify_custom(rx_stress_ctx->conn_handle,
-                                 hrs_hrm_handle, om);
-    assert(rc == 0);
-    return 0;
 }
 
 static int

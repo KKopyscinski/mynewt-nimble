@@ -1277,6 +1277,8 @@ tx_stress_13_gap_event(struct ble_gap_event *event, void *arg)
         MODLOG_DFLT(INFO, "Disconnect; reason=%d \n",
                     event->disconnect.reason);
         /* Finish test after disconnection */
+        tx_stress_ctx->s13_notif_num = tx_stress_ctx->rcv_num;
+        MODLOG_DFLT(INFO, "Received %d notifications\n", tx_stress_ctx->rcv_num);
         tx_stress_on_test_finish(13);
         return 0;
 
