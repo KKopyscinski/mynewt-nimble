@@ -1444,14 +1444,11 @@ rx_stress_main_task_fn(void *arg)
     os_sem_pend(&rx_stress_main_sem, OS_TIMEOUT_NEVER);
 
     /* Standard tests perform */
-    for (i = 11; i < STRESS_UUIDS_NUM; ++i) {
-        if (i == 7 || i == 8 || i == 13) {
-            /* 7,8: PHY update tests cause that the device during the next test
-             * will stuck somewhere and will reset. Skip them for now.
-             * 13: Should work after fixing ble_gattc_notify_custom (nimble issue on GitHub)*/
+    for (i = 2; i < STRESS_UUIDS_NUM; ++i) {
+        /* Skip test 7 for now, as it causes RX side restart during test 9 */
+        if (i == 7) {
             continue;
         }
-        /* Start test. */
         rx_stress_start(i);
     }
 
